@@ -18,7 +18,7 @@ class Monitor(Wrapper):
         self.tstart = time.time()
         self.results_writer = ResultsWriter(
             filename,
-            header={"t_start": time.time(), 'env_id' : env.spec and env.spec.id},
+            header={"t_start": time.time(), 'env_id': env.spec and env.spec.id},
             extra_keys=reset_keywords + info_keywords
         )
         self.reset_keywords = reset_keywords

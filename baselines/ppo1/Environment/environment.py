@@ -1,12 +1,16 @@
-import vehicle
-from Environment import geometry
+from baselines.ppo1.Environment import vehicle
+from baselines.ppo1.Environment import geometry
 import random
 from matplotlib import pyplot as plt
 import numpy as np
+from gym import spaces
 
-collisionReward = -500
-endReward = 500
+
+veh_num = 3
+collisionReward = -450
+endReward = 50
 timeReward = -1
+terminalReward = 550 - veh_num * endReward
 
 class Env(object):
     def __init__(self, N, height, width, laneWidth = 4, laneNum = 1):
@@ -18,19 +22,27 @@ class Env(object):
         self.laneWidth = laneWidth
         self.trafficModel = self.generateModel()
         self.vehs = []
+        self.endNum = 0
+        self.observation_space = spaces.Box(np.array([-self.height, 0] * self.N), np.array([self.height, 0] * self.N))
+        self.action_space = spaces.Box(low=np.array([-5] * self.N), high=np.array([5] * self.N))
 
 
     def manualSet(self, modelList):
         self.vehs = []
+        state = []
         for i in range(self.N):
             modelTag = modelList[i]
-            veh_temp = vehicle.Vehicle(self.trafficModel[modelTag], i * 10)
+            veh_temp = vehicle.Vehicle(self.trafficModel[modelTag])
             self.vehs.append(veh_temp)
             while self.collisionCheck()[0]:
                 self.vehs.pop()
-                modelTag = random.randint(0, len(self.trafficModel) - 1) if self.laneNum == 1 else random.randint(0, 23)
+                modelTag = modelList[i]
                 veh_temp = vehicle.Vehicle(self.trafficModel[modelTag])
                 self.vehs.append(veh_temp)
+        self.vehs.sort(key=takeId)
+        for i in range(self.N):
+            state += [self.vehs[i].getRelPos(), self.vehs[i].vel]
+        return np.array(state)
 
 
     def reStart(self):
@@ -46,10 +58,9 @@ class Env(object):
                 modelTag = random.randint(0, len(self.trafficModel) - 1)
                 veh_temp = vehicle.Vehicle(self.trafficModel[modelTag])
                 self.vehs.append(veh_temp)
+        self.vehs.sort(key=takeId)
         for i in range(self.N):
-            pos = self.vehs[i].cen_x if (abs(self.vehs[i].cen_x) > abs(self.vehs[i].cen_y)) else self.vehs[i].cen_y
-            state += [pos, self.vehs[i].trafficModel.id, self.vehs[i].vel]
-
+            state += [self.vehs[i].getRelPos(), self.vehs[i].vel]
         return np.array(state)
 
 
@@ -72,19 +83,21 @@ class Env(object):
         flag = 0
 
         for veh in self.vehs:
-            if veh.endFlag:
+            #if veh.endFlag:
+            if veh.getRelPos() < -5:
                 flag += 1
 
         return bool(flag), flag
 
 
-    def updateEnv(self, action, rewardModel = "all"):
+    def updateEnv(self, action, rewardModel = "single"):
         state = []
         reward = 0
         for i in range(self.N):
             self.vehs[i].stateupdate(action[i])
-            pos = self.vehs[i].cen_x if (abs(self.vehs[i].cen_x) > abs(self.vehs[i].cen_y)) else self.vehs[i].cen_y
-            state += [pos, self.vehs[i].trafficModel.id, self.vehs[i].vel]
+            state += [self.vehs[i].getRelPos(), self.vehs[i].vel]
+            #print(self.vehs[i].trafficModel.id, "|", self.vehs[i].posx, "|", self.vehs[i].ref[3][0], "|",
+            #     self.vehs[i].posy, "|", self.vehs[i].ref[3][1],"|", self.vehs[i].endFlag, "|", self.vehs[i].vel)
 
         collisionFlag = self.collisionCheck()[0]
         endNum = self.endCheck()[1]
@@ -96,9 +109,13 @@ class Env(object):
             if endNum == self.N:
                 reward += endReward
         elif rewardModel == "single":
-            reward += endNum * endReward
+            if self.endNum != endNum:
+                reward += endReward
+            self.endNum = endNum
+            if endNum == self.N:
+                reward += terminalReward
 
-        return np.array(state), reward, collisionFlag, endNum == self.N
+        return np.array(state), reward, collisionFlag or endNum == self.N, endNum == self.N
 
 
     def showEnv_init(self):
@@ -139,6 +156,10 @@ class Env(object):
                 safeLine.append(line)
                 safeLine[-1].set_data(self.vehs[i].safeX, self.vehs[i].safeY)
 
+        for i in range(self.N):
+            if not self.vehs[i].endFlag:
+                plt.plot(self.vehs[i].middlePoint[0], self.vehs[i].middlePoint[1], "go")
+
         plt.pause(0.1)
 
 
@@ -153,19 +174,19 @@ class Env(object):
             i = 0
             result.append(trafficModel(RD, DR, 'DR', i)); i += 1
             result.append(trafficModel(RD, RU, 'DU', i)); i += 1
-            # result.append(trafficModel(RD, UL, 'DL', i)); i += 1
+            result.append(trafficModel(RD, UL, 'DL', i)); i += 1
 
             result.append(trafficModel(UR, RU, 'RU', i)); i += 1
             result.append(trafficModel(UR, UL, 'RL', i)); i += 1
-            # result.append(trafficModel(UR, LD, 'RD', i)); i += 1
+            result.append(trafficModel(UR, LD, 'RD', i)); i += 1
 
             result.append(trafficModel(DL, LD, 'LD', i)); i += 1
             result.append(trafficModel(DL, DR, 'LR', i)); i += 1
-            # result.append(trafficModel(DL, RU, 'LU', i)); i += 1
+            result.append(trafficModel(DL, RU, 'LU', i)); i += 1
 
             result.append(trafficModel(LU, UL, 'UL', i)); i += 1
             result.append(trafficModel(LU, LD, 'UD', i)); i += 1
-            # result.append(trafficModel(LU, DR, 'UR', i)); i += 1
+            result.append(trafficModel(LU, DR, 'UR', i)); i += 1
 
         return result
 
@@ -180,4 +201,6 @@ class trafficModel(object):
 # def Euclid(veh1, veh2, safeDist):
 #     if (veh1.cen_x - veh2.cen_x) ** 2 + (veh1.cen_y - veh2.cen_y) ** 2 < (veh1.R + veh2.R + safeDist) ** 2:
 #         return True
-#     return False
+
+def takeId(elem):
+    return elem.trafficModel.id

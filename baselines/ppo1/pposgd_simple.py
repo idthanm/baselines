@@ -12,7 +12,8 @@ def traj_segment_generator(pi, env, horizon, stochastic):
     t = 0
     ac = env.action_space.sample() # not used, just so we have the datatype
     new = True # marks if we're on first timestep of an episode
-    ob = env.reset()
+    pattern = [2, 10, 4]
+    ob = env.manualSet(modelList=pattern)
 
     cur_ep_ret = 0 # return in current episode
     cur_ep_len = 0 # len of current episode
@@ -48,7 +49,7 @@ def traj_segment_generator(pi, env, horizon, stochastic):
         acs[i] = ac
         prevacs[i] = prevac
 
-        ob, rew, new, _ = env.step(ac)
+        ob, rew, new, _ = env.updateEnv(ac)
         rews[i] = rew
 
         cur_ep_ret += rew
@@ -58,7 +59,7 @@ def traj_segment_generator(pi, env, horizon, stochastic):
             ep_lens.append(cur_ep_len)
             cur_ep_ret = 0
             cur_ep_len = 0
-            ob = env.reset()
+            ob = env.manualSet(modelList=pattern)
         t += 1
 
 def add_vtarg_and_adv(seg, gamma, lam):

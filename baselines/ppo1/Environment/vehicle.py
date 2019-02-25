@@ -69,72 +69,93 @@ class Vehicle(object):
                         (trafficModel.start[0], trafficModel.end[1]-self.R_max),
                         (trafficModel.start[0]+self.R_max, trafficModel.end[1]),
                         (trafficModel.end[0],trafficModel.end[1])]
+            self.middlePoint = (self.ref[2][0] - self.R_max * cos(0.25 * pi),
+                                self.ref[1][1] + self.R_max * cos(0.25 * pi))
 
         elif trafficModel.flag == 'DU':#2
             self.ref = [(trafficModel.start[0], trafficModel.start[1]),
                         (trafficModel.start[0], trafficModel.start[1] + self.R_max),
                         (trafficModel.start[0], trafficModel.end[1]- self.R_max),
                         (trafficModel.start[0], trafficModel.end[1])]
+            self.middlePoint = (self.ref[0][0], 0)
 
         elif trafficModel.flag == 'DL':#3
             self.ref = [(trafficModel.start[0], trafficModel.start[1]),
                         (trafficModel.start[0], trafficModel.end[1] - self.R_max),
                         (trafficModel.start[0] - self.R_max, trafficModel.end[1]),
                         (trafficModel.end[0], trafficModel.end[1])]
+            self.middlePoint = (self.ref[2][0] + self.R_max * cos(0.25 * pi),
+                                self.ref[1][1] + self.R_max * cos(0.25 * pi))
 
         elif trafficModel.flag == 'RU':#4
             self.ref = [(trafficModel.start[0], trafficModel.start[1]),
                         (trafficModel.end[0] +  self.R_max, trafficModel.start[1]),
                         (trafficModel.end[0], trafficModel.start[1] +  self.R_max),
                         (trafficModel.end[0], trafficModel.end[1])]
+            self.middlePoint = (self.ref[1][0] - self.R_max * cos(0.25 * pi),
+                                self.ref[2][1] - self.R_max * cos(0.25 * pi))
 
         elif trafficModel.flag == 'RL':#5
             self.ref = [(trafficModel.start[0], trafficModel.start[1]),
                         (trafficModel.start[0] - self.R_max, trafficModel.end[1] ),
                         (trafficModel.end[0] + self.R_max, trafficModel.end[1]),
                         (trafficModel.end[0], trafficModel.end[1])]
+            self.middlePoint = (0, self.ref[0][1])
 
         elif trafficModel.flag == 'RD':#6
             self.ref = [(trafficModel.start[0], trafficModel.start[1]),
                         (trafficModel.end[0] + self.R_max, trafficModel.start[1] ),
                         (trafficModel.end[0] , trafficModel.start[1]- self.R_max),
                         (trafficModel.end[0], trafficModel.end[1])]
+            self.middlePoint = (self.ref[1][0] - self.R_max * cos(0.25 * pi),
+                                self.ref[2][1] + self.R_max * cos(0.25 * pi))
 
         elif trafficModel.flag == 'LD':#7
             self.ref = [(trafficModel.start[0], trafficModel.start[1]),
                         (trafficModel.end[0] - self.R_max, trafficModel.start[1] ),
                         (trafficModel.end[0] , trafficModel.start[1]- self.R_max),
                         (trafficModel.end[0], trafficModel.end[1])]
+            self.middlePoint = (self.ref[1][0] + self.R_max * cos(0.25 * pi),
+                                self.ref[2][1] + self.R_max * cos(0.25 * pi))
 
         elif trafficModel.flag == 'LR':  # 8
             self.ref = [(trafficModel.start[0], trafficModel.start[1]),
                         (trafficModel.start[0] + self.R_max, trafficModel.end[1]),
                         (trafficModel.end[0] - self.R_max, trafficModel.end[1]),
                         (trafficModel.end[0], trafficModel.end[1])]
+            self.middlePoint = (0, self.ref[0][1])
 
         elif trafficModel.flag == 'LU':  # 9
             self.ref = [(trafficModel.start[0], trafficModel.start[1]),
                         (trafficModel.end[0] - self.R_max, trafficModel.start[1]),
                         (trafficModel.end[0] , trafficModel.start[1]+ self.R_max),
                         (trafficModel.end[0], trafficModel.end[1])]
+            self.middlePoint = (self.ref[1][0] + self.R_max * cos(0.25 * pi),
+                                self.ref[2][1] - self.R_max * cos(0.25 * pi))
+
 
         elif trafficModel.flag == 'UL':  # 10
             self.ref = [(trafficModel.start[0], trafficModel.start[1]),
                         (trafficModel.start[0] , trafficModel.end[1]+ self.R_max),
                         (trafficModel.start[0] - self.R_max, trafficModel.end[1]),
                         (trafficModel.end[0], trafficModel.end[1])]
+            self.middlePoint = (self.ref[2][0] + self.R_max * cos(0.25 * pi),
+                                self.ref[1][1] - self.R_max * cos(0.25 * pi))
 
         elif trafficModel.flag == 'UD':  # 11
             self.ref = [(trafficModel.start[0], trafficModel.start[1]),
                         (trafficModel.start[0] , trafficModel.start[1]- self.R_max),
                         (trafficModel.end[0] , trafficModel.end[1]+ self.R_max),
                         (trafficModel.end[0], trafficModel.end[1])]
+            self.middlePoint = (self.ref[1][0], 0)
 
         else:  # 12
             self.ref = [(trafficModel.start[0], trafficModel.start[1]),
                         (trafficModel.start[0] , trafficModel.end[1]+ self.R_max),
                         (trafficModel.start[0] + self.R_max, trafficModel.end[1]),
                         (trafficModel.end[0], trafficModel.end[1])]
+            self.middlePoint = (self.ref[2][0] - self.R_max * cos(0.25 * pi),
+                                self.ref[1][1] - self.R_max * cos(0.25 * pi))
 
 
     def carBox(self):
@@ -229,6 +250,83 @@ class Vehicle(object):
             self.boundX, self.boundY = self.carBox()
             self.safeX, self.safeY = self.carSafeBox()
             self.endFlag = self.targetCheck()
+
+
+
+    def getRelPos(self):
+        if self.trafficModel.flag == 'DR':
+            if self.posy < self.middlePoint[1]:
+                pos = self.middlePoint[1] - self.posy
+            else:
+                pos = self.middlePoint[0] - self.posx
+
+        elif self.trafficModel.flag == 'DU':
+            if self.posy < self.middlePoint[1]:
+                pos = self.middlePoint[1] - self.posy
+            else:
+                pos = self.middlePoint[1] - self.posy
+
+        elif self.trafficModel.flag == 'DL':
+            if self.posy < self.middlePoint[1]:
+                pos = self.middlePoint[1] - self.posy
+            else:
+                pos = - (self.middlePoint[0] - self.posx)
+
+        elif self.trafficModel.flag == 'RU':
+            if self.posx > self.middlePoint[0]:
+                pos = - (self.middlePoint[0] - self.posx)
+            else:
+                pos = self.middlePoint[1] - self.posy
+
+        elif self.trafficModel.flag == 'RL':
+            if self.posx > self.middlePoint[0]:
+                pos = - (self.middlePoint[0] - self.posx)
+            else:
+                pos = - (self.middlePoint[0] - self.posx)
+
+        elif self.trafficModel.flag == 'RD':
+            if self.posx > self.middlePoint[0]:
+                pos = - (self.middlePoint[0] - self.posx)
+            else:
+                pos = - (self.middlePoint[1] - self.posy)
+
+        elif self.trafficModel.flag == 'LD':
+            if self.posx < self.middlePoint[0]:
+                pos = self.middlePoint[0] - self.posx
+            else:
+                pos = - (self.middlePoint[1] - self.posy)
+
+        elif self.trafficModel.flag == 'LR':
+            if self.posx < self.middlePoint[0]:
+                pos = self.middlePoint[0] - self.posx
+            else:
+                pos = self.middlePoint[0] - self.posx
+
+        elif self.trafficModel.flag == 'LU':
+            if self.posx < self.middlePoint[0]:
+                pos = self.middlePoint[0] - self.posx
+            else:
+                pos = self.middlePoint[1] - self.posy
+
+        elif self.trafficModel.flag == 'UL':
+            if self.posy > self.middlePoint[1]:
+                pos = - (self.middlePoint[1] - self.posy)
+            else:
+                pos = - (self.middlePoint[0] - self.posx)
+
+        elif self.trafficModel.flag == 'UD':
+            if self.posy > self.middlePoint[1]:
+                pos = - (self.middlePoint[1] - self.posy)
+            else:
+                pos = - (self.middlePoint[1] - self.posy)
+
+        else:
+            if self.posy > self.middlePoint[1]:
+                pos = - (self.middlePoint[1] - self.posy)
+            else:
+                pos = self.middlePoint[0] - self.posx
+
+        return pos
 
 
     def targetCheck(self):
@@ -382,7 +480,7 @@ class Vehicle(object):
             if y < self.ref[3][1]:
                 self.posy = y
                 self.posx = x
-            if x >= self.ref[3][1]:
+            if y >= self.ref[3][1]:
                 self.posy = self.ref[3][1]
                 self.posx = self.ref[3][0]
             self.delta = 0
@@ -442,7 +540,7 @@ class Vehicle(object):
             if y > self.ref[3][1]:
                 self.posy = y
                 self.posx = x
-            if x <= self.ref[3][1]:
+            if y <= self.ref[3][1]:
                 self.posy = self.ref[3][1]
                 self.posx = self.ref[3][0]
             self.delta = 0
