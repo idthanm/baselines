@@ -1,4 +1,4 @@
-import environment
+from baselines.ppo1.Environment import environment
 import time
 
 height, width = 30, 30
@@ -16,9 +16,9 @@ for count in range(10000):
     CrossRoad.manualSet(vehModelList)
     # CrossRoad.reStart()
     print()
-    while not (collisionFlag or endFlag):
+    while not endFlag:
         action = [0] * vehNum
-        [state, reward, collisionFlag, endFlag] = CrossRoad.updateEnv(action)
+        [state, reward, endFlag, _] = CrossRoad.updateEnv(action)
         CrossRoad.showEnv()
         tag += 1
         # print(count, "step: ", tag, "collision?: ", collisionFlag, "end?: ", endFlag)

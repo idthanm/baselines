@@ -23,7 +23,7 @@ class Env(object):
         self.trafficModel = self.generateModel()
         self.vehs = []
         self.endNum = 0
-        self.observation_space = spaces.Box(np.array([-self.height, 0] * self.N), np.array([self.height, 0] * self.N))
+        self.observation_space = spaces.Box(np.array([-self.height, 0] * self.N), np.array([self.height, 10] * self.N))
         self.action_space = spaces.Box(low=np.array([-5] * self.N), high=np.array([5] * self.N))
 
 

@@ -129,6 +129,7 @@ def learn(env, policy_fn, *,
     U.initialize()
     adam.sync()
 
+
     # Prepare for rollouts
     # ----------------------------------------
     seg_gen = traj_segment_generator(pi, env, timesteps_per_actorbatch, stochastic=True)
@@ -141,6 +142,12 @@ def learn(env, policy_fn, *,
     rewbuffer = deque(maxlen=100) # rolling buffer for episode rewards
 
     assert sum([max_iters>0, max_timesteps>0, max_episodes>0, max_seconds>0])==1, "Only one time constraint permitted"
+    # collecting data for tensorboard
+    # ---------------------------------------
+    # sess = U.get_session()
+    # summ_writer = tf.summary.FileWriter('E:\Research\Reinforcement Learning\openai_baseline\\baselines\\toyota\summary',
+    #                                    sess.graph)
+
 
     while True:
         if callback: callback(locals(), globals())
@@ -210,8 +217,19 @@ def learn(env, policy_fn, *,
         logger.record_tabular("EpisodesSoFar", episodes_so_far)
         logger.record_tabular("TimestepsSoFar", timesteps_so_far)
         logger.record_tabular("TimeElapsed", time.time() - tstart)
+
+        # mean_reward_this_batch = np.mean(rews)
+        # total_episode_num_of_this_batch = len(lens)
+        # summ_writer.add_summary(mean_reward_this_batch, episodes_so_far)
+
+        # save model
+        # if episodes_so_far % 10000 == 1:
+        #     U.save_state('E:\Research\Reinforcement Learning\openai_baseline\\baselines\\toyota\model\intersection_policy',
+        #                 global_step=episodes_so_far, write_meta_graph=False)
+
         if MPI.COMM_WORLD.Get_rank()==0:
             logger.dump_tabular()
+
 
     return pi
 

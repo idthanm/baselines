@@ -2,13 +2,13 @@ import random
 import numpy as np
 from math import pi, hypot, sin, cos, asin, tan
 
-V_max = 50/3.6; V_min = 30/3.6 # (m/s)
+V_max = 50/3.6; V_min = 10/3.6 # (m/s)
 a_max = 1; a_min = -1 # (m^2/s)
 delta_max = pi / 6; delta_min = - pi / 6 # limit of delta
 T = 0.1 # sample time
 
 epsilon = 1 # threshold of the target check
-regionScale = 0.4 # start position random region
+regionScale = 1 # start position random region
 
 C = 2.7 # distance form rear to forward
 L = 4.7 # length of the vehicle

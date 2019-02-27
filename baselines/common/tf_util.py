@@ -325,7 +325,7 @@ def load_state(fname, sess=None):
     saver = tf.train.Saver()
     saver.restore(tf.get_default_session(), fname)
 
-def save_state(fname, sess=None):
+def save_state(fname, sess=None, global_step=None, write_meta_graph=None):
     from baselines import logger
     logger.warn('save_state method is deprecated, please use save_variables instead')
     sess = sess or get_session()
@@ -333,7 +333,7 @@ def save_state(fname, sess=None):
     if any(dirname):
         os.makedirs(dirname, exist_ok=True)
     saver = tf.train.Saver()
-    saver.save(tf.get_default_session(), fname)
+    saver.save(tf.get_default_session(), fname, global_step, write_meta_graph=write_meta_graph)
 
 # The methods above and below are clearly doing the same thing, and in a rather similar way
 # TODO: ensure there is no subtle differences and remove one
