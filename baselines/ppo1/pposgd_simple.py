@@ -227,7 +227,10 @@ def learn(env, policy_fn, *,
         #     U.save_state('E:\Research\Reinforcement Learning\openai_baseline\\baselines\\toyota\model\intersection_policy',
         #                 global_step=episodes_so_far, write_meta_graph=False)
 
-        if MPI.COMM_WORLD.Get_rank()==0:
+        if MPI.COMM_WORLD.Get_rank() == 0:
+            if iters_so_far % 20 == 1:
+                U.save_state('E:\Research\Reinforcement Learning\openai_baseline\\baselines\\toyota\model\intersection_policy',
+                             global_step=episodes_so_far, write_meta_graph=False)
             logger.dump_tabular()
 
 

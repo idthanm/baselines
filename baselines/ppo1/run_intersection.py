@@ -34,8 +34,8 @@ def train(num_timesteps, seed, model_path=None):
             schedule='linear',
         )
     # env.close()
-    if model_path:
-        U.save_state(model_path)
+    # if model_path:
+    #     U.save_state(model_path)
 
     return pi
 
@@ -47,7 +47,7 @@ def train(num_timesteps, seed, model_path=None):
 #         return r * self.scale
 
 def main():
-    logger.configure()
+    logger.configure('E:\Research\Reinforcement Learning\openai_baseline\\baselines\\toyota\log')
     parser = common_arg_parser()
     parser.add_argument('--model-path', default=os.path.join(logger.get_dir(), 'intersection_policy'))
     parser.set_defaults(num_timesteps=int(2e7))
