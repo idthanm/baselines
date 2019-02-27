@@ -86,7 +86,8 @@ def learn(env, policy_fn, *,
         max_timesteps=0, max_episodes=0, max_iters=0, max_seconds=0,  # time constraint
         callback=None, # you can do anything in the callback, since it takes locals(), globals()
         adam_epsilon=1e-5,
-        schedule='constant' # annealing for stepsize parameters (epsilon and adam)
+        schedule='constant', # annealing for stepsize parameters (epsilon and adam)
+        load_model_path=None
         ):
     # Setup losses and stuff
     # ----------------------------------------
@@ -125,8 +126,12 @@ def learn(env, policy_fn, *,
     assign_old_eq_new = U.function([],[], updates=[tf.assign(oldv, newv)
         for (oldv, newv) in zipsame(oldpi.get_variables(), pi.get_variables())])
     compute_losses = U.function([ob, ac, atarg, ret, lrmult], losses)
-
-    U.initialize()
+    previous_trained_model_episodenum = 0
+    if not load_model_path:
+        U.initialize()
+    else:
+        U.load_state(load_model_path)
+        previous_trained_model_episodenum = get_previous_trained_model_episodenum(load_model_path)
     adam.sync()
 
 
@@ -228,13 +233,18 @@ def learn(env, policy_fn, *,
         #                 global_step=episodes_so_far, write_meta_graph=False)
 
         if MPI.COMM_WORLD.Get_rank() == 0:
-            if iters_so_far % 20 == 1:
+            if iters_so_far % 5 == 1:
                 U.save_state('E:\Research\Reinforcement Learning\openai_baseline\\baselines\\toyota\model\intersection_policy',
-                             global_step=episodes_so_far, write_meta_graph=False)
+                             global_step=episodes_so_far+previous_trained_model_episodenum, write_meta_graph=False)
+                # 'C:\\Users\\GuanYang\\PycharmProjects\\toyota2018_4\\toyota\\model\\intersection_policy'
             logger.dump_tabular()
-
 
     return pi
 
+
 def flatten_lists(listoflists):
     return [el for list_ in listoflists for el in list_]
+
+
+def get_previous_trained_model_episodenum(load_model_path):
+    return int((load_model_path.split('\\')[-1]).split('-')[-1])
