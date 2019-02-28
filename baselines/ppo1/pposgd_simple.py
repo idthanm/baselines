@@ -247,4 +247,4 @@ def flatten_lists(listoflists):
 
 
 def get_previous_trained_model_episodenum(load_model_path):
-    return int((load_model_path.split('\\')[-1]).split('-')[-1])
+    return int((load_model_path.split('\\')[-1]).split('-')[-1])+0
