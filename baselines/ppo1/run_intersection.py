@@ -48,8 +48,8 @@ def train(num_timesteps, seed, load_model_path=None):
 #         return r * self.scale
 
 def main():
-    logger.configure('E:\Research\Reinforcement Learning\openai_baseline\\baselines\\toyota\log')
-    # 'C:\\Users\\GuanYang\\PycharmProjects\\toyota2018_4\\toyota\\log'
+    logger.configure('E:\\Project\\Toyota RL\\Toyata 2018\\Toyata RL 4th quarter\\log')
+    # 'F:\\GuanYang\\toyota2018_4\\log'
     parser = common_arg_parser()
     parser.add_argument('--load_model_path', default=os.path.join(logger.get_dir(), 'intersection_policy'))
     parser.set_defaults(num_timesteps=int(2e7))
@@ -76,8 +76,6 @@ def main():
             env.showEnv()
             if done:
                 ob = env.manualSet(modelList=pattern)
-
-
 
 
 if __name__ == '__main__':

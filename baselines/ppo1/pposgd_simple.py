@@ -234,9 +234,9 @@ def learn(env, policy_fn, *,
 
         if MPI.COMM_WORLD.Get_rank() == 0:
             if iters_so_far % 5 == 1:
-                U.save_state('E:\Research\Reinforcement Learning\openai_baseline\\baselines\\toyota\model\intersection_policy',
+                U.save_state('E:\\Project\\Toyota RL\\Toyata 2018\\Toyata RL 4th quarter\\model\\intersection_policy',
                              global_step=episodes_so_far+previous_trained_model_episodenum, write_meta_graph=False)
-                # 'C:\\Users\\GuanYang\\PycharmProjects\\toyota2018_4\\toyota\\model\\intersection_policy'
+                # 'F:\\GuanYang\\toyota2018_4\\model\\intersection_policy'
             logger.dump_tabular()
 
     return pi
