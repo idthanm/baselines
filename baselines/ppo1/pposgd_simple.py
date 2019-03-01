@@ -12,7 +12,7 @@ def traj_segment_generator(pi, env, horizon, stochastic):
     t = 0
     ac = env.action_space.sample() # not used, just so we have the datatype
     new = True # marks if we're on first timestep of an episode
-    pattern = [2, 10, 4]
+    pattern = [2, 4, 8, 10]
     ob = env.manualSet(modelList=pattern)
 
     cur_ep_ret = 0 # return in current episode
@@ -222,15 +222,6 @@ def learn(env, policy_fn, *,
         logger.record_tabular("EpisodesSoFar", episodes_so_far)
         logger.record_tabular("TimestepsSoFar", timesteps_so_far)
         logger.record_tabular("TimeElapsed", time.time() - tstart)
-
-        # mean_reward_this_batch = np.mean(rews)
-        # total_episode_num_of_this_batch = len(lens)
-        # summ_writer.add_summary(mean_reward_this_batch, episodes_so_far)
-
-        # save model
-        # if episodes_so_far % 10000 == 1:
-        #     U.save_state('E:\Research\Reinforcement Learning\openai_baseline\\baselines\\toyota\model\intersection_policy',
-        #                 global_step=episodes_so_far, write_meta_graph=False)
 
         if MPI.COMM_WORLD.Get_rank() == 0:
             if iters_so_far % 100 == 1:

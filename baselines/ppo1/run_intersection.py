@@ -4,19 +4,17 @@ from baselines.common.cmd_util import common_arg_parser
 from baselines.common import tf_util as U
 from baselines import logger
 from baselines.ppo1.Environment import environment
-
 import gym
 
+
 def train(num_timesteps, seed, load_model_path=None):
-    # env_id = 'Humanoid-v2'
     from baselines.ppo1 import mlp_policy, pposgd_simple
     U.make_session(num_cpu=1).__enter__()
+
     def policy_fn(name, ob_space, ac_space):
         return mlp_policy.MlpPolicy(name=name, ob_space=ob_space, ac_space=ac_space,
-            hid_size=64, num_hid_layers=2)
-    # env = make_mujoco_env(env_id, seed)
-    vehNum, height, width = 3, 30, 30
-    env = environment.Env(vehNum, height, width)
+                                    hid_size=64, num_hid_layers=2)
+    env = environment.Env(N=4, height=30, width=30)
 
     # parameters below were the best found in a simple random search
     # these are good enough to make humanoid walk, but whether those are
@@ -34,9 +32,6 @@ def train(num_timesteps, seed, load_model_path=None):
                              schedule='linear',
                              load_model_path=load_model_path
                              )
-    # env.close()
-    # if model_path:
-    #     U.save_state(model_path)
 
     return pi
 
@@ -63,11 +58,9 @@ def main():
         # construct the model object, load pre-trained model and render
         pi = train(num_timesteps=1, seed=args.seed)
         U.load_state(args.load_model_path)
-        # env = make_mujoco_env('Humanoid-v2', seed=0)
-        vehNum, height, width = 3, 30, 30
-        env = environment.Env(vehNum, height, width)
+        env = environment.Env(N=4, height=30, width=30)
 
-        pattern = [2, 10, 4]
+        pattern = [2, 4, 8, 10]
         ob = env.manualSet(modelList=pattern)
         while True:
             action = pi.act(stochastic=False, ob=ob)[0]

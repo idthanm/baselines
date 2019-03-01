@@ -6,12 +6,6 @@ import numpy as np
 from gym import spaces
 
 
-veh_num = 3
-collisionReward = -450
-endReward = 50
-timeReward = -1
-terminalReward = 550 - veh_num * endReward
-
 class Env(object):
     def __init__(self, N, height, width, laneWidth = 4, laneNum = 1):
         self.N = N
@@ -21,6 +15,7 @@ class Env(object):
         self.laneNum = laneNum
         self.laneWidth = laneWidth
         self.trafficModel = self.generateModel()
+        self.reward_model = RewardModel(step_reward=-1, crash_reward=-50, one_passed_reward=10, all_passed_reward=50)
         self.vehs = []
         self.endNum = 0
         self.observation_space = spaces.Box(np.array([-self.height, 0] * self.N), np.array([self.height, 10] * self.N))
@@ -102,18 +97,18 @@ class Env(object):
         collisionFlag = self.collisionCheck()[0]
         endNum = self.endCheck()[1]
 
-        reward += timeReward
+        reward += self.reward_model.step_reward
         if collisionFlag:
-            reward += collisionReward
+            reward += self.reward_model.crash_reward
         if rewardModel == "all":
             if endNum == self.N:
-                reward += endReward
+                reward += self.reward_model.one_passed_reward
         elif rewardModel == "single":
             if self.endNum != endNum:
-                reward += endReward
+                reward += self.reward_model.one_passed_reward
             self.endNum = endNum
             if endNum == self.N:
-                reward += terminalReward
+                reward += self.reward_model.all_passed_reward
 
         return np.array(state), reward, collisionFlag or endNum == self.N, endNum == self.N
 
@@ -197,6 +192,13 @@ class trafficModel(object):
         self.end = end
         self.flag = flag
         self.id = id
+
+class RewardModel(object):
+    def __init__(self, step_reward, crash_reward, one_passed_reward, all_passed_reward):
+        self.step_reward = step_reward
+        self.crash_reward = crash_reward
+        self.one_passed_reward = one_passed_reward
+        self.all_passed_reward = all_passed_reward
 
 # def Euclid(veh1, veh2, safeDist):
 #     if (veh1.cen_x - veh2.cen_x) ** 2 + (veh1.cen_y - veh2.cen_y) ** 2 < (veh1.R + veh2.R + safeDist) ** 2:

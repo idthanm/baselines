@@ -8,7 +8,7 @@ delta_max = pi / 6; delta_min = - pi / 6 # limit of delta
 T = 0.1 # sample time
 
 epsilon = 1 # threshold of the target check
-regionScale = 1 # start position random region
+regionScale = 0.8 # start position random region
 
 C = 2.7 # distance form rear to forward
 L = 4.7 # length of the vehicle
