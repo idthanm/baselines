@@ -13,7 +13,7 @@ def train(env, num_timesteps, load_model_path=None):
 
     def policy_fn(name, ob_space, ac_space):
         return mlp_policy.MlpPolicy(name=name, ob_space=ob_space, ac_space=ac_space,
-                                    hid_size=64, num_hid_layers=2)
+                                    hid_size=128, num_hid_layers=2)
 
 
     # parameters below were the best found in a simple random search
