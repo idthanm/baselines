@@ -7,14 +7,14 @@ from baselines.ppo1.Environment import environment
 import gym
 
 
-def train(num_timesteps, seed, load_model_path=None):
+def train(env, num_timesteps, load_model_path=None):
     from baselines.ppo1 import mlp_policy, pposgd_simple
     U.make_session(num_cpu=1).__enter__()
 
     def policy_fn(name, ob_space, ac_space):
         return mlp_policy.MlpPolicy(name=name, ob_space=ob_space, ac_space=ac_space,
                                     hid_size=64, num_hid_layers=2)
-    env = environment.Env(N=4, height=30, width=30)
+
 
     # parameters below were the best found in a simple random search
     # these are good enough to make humanoid walk, but whether those are
@@ -50,25 +50,23 @@ def main():
     parser.set_defaults(num_timesteps=int(2e7))
 
     args = parser.parse_args()
+    env = environment.Env(N=6, pattern=[0, 2, 4, 8, 9, 10], height=30, width=30)
 
     if not args.play:
         # train the model
-        train(num_timesteps=args.num_timesteps, seed=args.seed, load_model_path=args.load_model_path)
+        train(env=env, num_timesteps=args.num_timesteps, load_model_path=args.load_model_path)
     else:
         # construct the model object, load pre-trained model and render
-        pi = train(num_timesteps=1, seed=args.seed)
+        pi = train(env=env, num_timesteps=1)
         U.load_state(args.load_model_path)
-        env = environment.Env(N=4, height=30, width=30)
-
-        pattern = [2, 4, 8, 10]
-        ob = env.manualSet(modelList=pattern)
+        ob = env.manualSet(modelList=env.pattern)
         while True:
             action = pi.act(stochastic=False, ob=ob)[0]
             # ob, _, done, _ =  env.step(action)
             ob, rew, done, _ = env.updateEnv(action)
             env.showEnv()
             if done:
-                ob = env.manualSet(modelList=pattern)
+                ob = env.manualSet(modelList=env.pattern)
 
 
 if __name__ == '__main__':

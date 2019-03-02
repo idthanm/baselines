@@ -7,8 +7,9 @@ from gym import spaces
 
 
 class Env(object):
-    def __init__(self, N, height, width, laneWidth = 4, laneNum = 1):
+    def __init__(self, N, pattern, height, width, laneWidth = 4, laneNum = 1):
         self.N = N
+        self.pattern = pattern
         self.safeDist = 0.1
         self.height = height
         self.width = width
